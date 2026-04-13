@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { supabase } from '../utils/supabase';
-import SongTable from '../components/SongTable';
-import LoadingSpinner from '../components/LoadingSpinner';
+import { apiFetch } from '@/utils/api';
+import SongTable from '@/components/SongTable';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import { usePlaylist } from '@/hooks/usePlaylist';
+import { Toaster } from '@/components/ui/sonner';
 
 /**
  * Single Genre detail view.
- * Shows genre name and all songs in that genre.
+ * Displays the genre name and a table of all songs in that genre.
+ * Songs can be added to the active playlist.
  *
- * Props:
- *   currentPlaylist    - active playlist object
- *   setCurrentPlaylist - setter for playlist state
+ * @param {object} props
+ * @param {object|null} props.currentPlaylist - The currently selected playlist
+ * @param {function} props.setCurrentPlaylist - Setter to update the active playlist
  */
 function SingleGenreView({ currentPlaylist, setCurrentPlaylist }) {
   const { id } = useParams();
@@ -18,50 +21,49 @@ function SingleGenreView({ currentPlaylist, setCurrentPlaylist }) {
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [toast, setToast] = useState('');
+
+  const { addSong } = usePlaylist(currentPlaylist, setCurrentPlaylist);
 
   useEffect(() => {
+    /**
+     * Fetches all genres (to find the matching one) and songs for this genre in parallel.
+     * Uses /api/genres and /api/songs/genre/:id endpoints.
+     */
     async function fetchGenre() {
       setLoading(true);
-      const [genreRes, songsRes] = await Promise.all([
-        supabase.from('genres').select('*').eq('genre_id', id).single(),
-        supabase.from('songs').select('*, artists(artist_name)').eq('genre_id', id).order('title'),
-      ]);
-
-      if (genreRes.error) { setError(genreRes.error.message); setLoading(false); return; }
-      setGenre(genreRes.data);
-      setSongs(songsRes.data ?? []);
-      setLoading(false);
+      try {
+        const [genres, songsData] = await Promise.all([
+          apiFetch('/api/genres'),
+          apiFetch(`/api/songs/genre/${id}`),
+        ]);
+        const found = genres.find((g) => String(g.genre_id) === String(id));
+        setGenre(found ?? null);
+        setSongs(Array.isArray(songsData) ? songsData : []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchGenre();
   }, [id]);
 
-  function handleAddToPlaylist(song) {
-    if (!currentPlaylist) { showToast('No active playlist selected.'); return; }
-    const already = currentPlaylist.songs?.some(s => s.song_id === song.song_id);
-    if (already) { showToast(`"${song.title}" is already in the playlist.`); return; }
-    setCurrentPlaylist(prev => ({ ...prev, songs: [...(prev.songs ?? []), song] }));
-    showToast(`Added "${song.title}" to ${currentPlaylist.name}.`);
-  }
-
-  function showToast(msg) {
-    setToast(msg);
-    setTimeout(() => setToast(''), 3000);
-  }
-
   if (loading) return <LoadingSpinner />;
-  if (error) return <p className="error">Error: {error}</p>;
-  if (!genre) return null;
+  if (error) return <p className="text-red-700 p-4">Error: {error}</p>;
+  if (!genre) return <p className="text-zinc-400 p-4">Genre not found.</p>;
 
   return (
-    <div className="single-genre-view">
-      {toast && <div className="toast">{toast}</div>}
+    <div className="space-y-10">
+      <Toaster position="bottom-right" />
 
-      <h1>{genre.genre_name}</h1>
+      <div className="border-b border-zinc-200 pb-6">
+        <p className="text-xs font-semibold text-red-700 uppercase tracking-widest mb-2">Genre</p>
+        <h1 className="text-5xl font-black text-zinc-900 tracking-tight">{genre.genre_name}</h1>
+        <p className="text-zinc-400 text-sm mt-2">{songs.length} songs</p>
+      </div>
 
-      <section className="genre-songs">
-        <h2>Songs in this genre</h2>
-        <SongTable songs={songs} onAddToPlaylist={handleAddToPlaylist} />
+      <section className="space-y-4">
+        <SongTable songs={songs} onAddToPlaylist={addSong} />
       </section>
     </div>
   );

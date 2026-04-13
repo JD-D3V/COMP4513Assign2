@@ -1,16 +1,53 @@
-# React + Vite
+# COMP 4513 Assignment 2 — Music Browser SPA
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React single-page application for browsing a music collection. Browse artists, genres, and songs; view audio-profile radar charts; and manage personal playlists backed by Supabase.
 
-Currently, two official plugins are available:
+## Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Deployed on Netlify — see submission for URL.
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+Create a `.env.local` file with:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+VITE_API_BASE_URL=https://<your-render-app>.onrender.com
+VITE_SUPABASE_URL=https://<your-project>.supabase.co
+VITE_SUPABASE_ANON_KEY=<your-anon-key>
+```
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend framework | React 19 + Vite |
+| Routing | React Router DOM v7 |
+| UI components | shadcn/ui |
+| Styling | Tailwind CSS v4 |
+| Charts | Recharts (RadarChart) |
+| Music data API | Node.js / Express + SQLite (Assignment 1) |
+| Auth + Playlists | Supabase |
+| Hosting (React) | Netlify |
+| Hosting (API) | Render |
+
+## Features
+
+- Browse all artists, genres, and songs with full detail views
+- Additive AND filtering: title search, year, artist, genre multi-select
+- Removable filter chips + Clear All
+- Sort by title, year, or artist name
+- Audio-profile radar chart (danceability, energy, valence, acousticness, liveness, speechiness)
+- Related songs algorithm (top-3 analytic similarity scoring)
+- Supabase authentication (register + login)
+- Personal playlists: create, delete (with confirm), add/remove songs — all persisted in Supabase
+
+## Author
+
+Joseph D — [github.com/JD-D3V](https://github.com/JD-D3V)
+
+Source: [github.com/JD-D3V/COMP4513Assign2](https://github.com/JD-D3V/COMP4513Assign2)

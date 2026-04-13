@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/utils/supabase';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -19,24 +20,44 @@ import './App.css';
 
 /**
  * Root application component.
- * Manages global state: auth, current playlist, about dialog visibility.
+ * Manages global state: Supabase auth session, current playlist, about dialog.
+ * Subscribes to auth state changes so login/logout updates the UI reactively.
  */
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
   const [currentPlaylist, setCurrentPlaylist] = useState(null);
   const [showAbout, setShowAbout] = useState(false);
 
+  const isLoggedIn = !!user;
+
+  useEffect(() => {
+    /**
+     * On mount, load the existing session (handles page refresh).
+     * Then subscribe to auth state changes (login, logout, token refresh).
+     * Unsubscribes on unmount to avoid memory leaks.
+     */
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (!session) setCurrentPlaylist(null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   return (
     <BrowserRouter>
-      <div className="app-wrapper">
+      <div className="min-h-screen flex flex-col bg-stone-50 text-zinc-900">
         <Header
           isLoggedIn={isLoggedIn}
-          onLogout={() => setIsLoggedIn(false)}
           currentPlaylist={currentPlaylist}
           onAbout={() => setShowAbout(true)}
         />
 
-        <main className="main-content">
+        <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-10">
           <Routes>
             <Route path="/" element={<HomeView />} />
             <Route path="/artists" element={<ArtistsView />} />
@@ -53,7 +74,7 @@ function App() {
                   : <Navigate to="/login" replace />
               }
             />
-            <Route path="/login" element={<LoginView onLogin={() => setIsLoggedIn(true)} />} />
+            <Route path="/login" element={<LoginView />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
