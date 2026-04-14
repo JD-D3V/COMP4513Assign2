@@ -92,6 +92,28 @@ function App() {
 
         {showAbout && <AboutDialog onClose={() => setShowAbout(false)} />}
       </div>
+
+      {/* Keyboard shortcut hint — fixed to viewport */}
+      <div className="fixed bottom-4 left-4 z-[9999] group">
+        <button
+          className="w-7 h-7 rounded-full border-2 border-white bg-white/90 text-zinc-800 hover:bg-white transition-colors flex items-center justify-center text-xs font-bold shadow-md"
+          aria-label="Keyboard shortcuts"
+        >
+          ?
+        </button>
+        <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block pointer-events-none">
+          <div className="bg-zinc-900 text-white text-xs p-3 w-44 shadow-xl">
+            <p className="font-semibold text-zinc-300 mb-2 uppercase tracking-widest text-[10px]">Shortcuts</p>
+            {[['H','Home'],['A','Artists'],['G','Genres'],['S','Songs'],['P','Playlists']].map(([key, label]) => (
+              <div key={key} className="flex justify-between items-center py-0.5">
+                <span className="text-zinc-400">{label}</span>
+                <kbd className="bg-zinc-700 text-zinc-200 px-1.5 py-0.5 text-[10px] font-mono">{key}</kbd>
+              </div>
+            ))}
+          </div>
+          <div className="absolute bottom-[-4px] left-3 w-2 h-2 bg-zinc-900 rotate-45" />
+        </div>
+      </div>
     </BrowserRouter>
   );
 }
