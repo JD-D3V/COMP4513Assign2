@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 
 /**
  * Modal dialog showing assignment info, technologies, and author details.
+ * Uses the native HTML &lt;dialog&gt; element as recommended by the assignment spec.
  * Closes when the X button is clicked, the backdrop is clicked, or Escape is pressed.
  *
  * @param {object} props
@@ -10,33 +11,41 @@ import { useEffect, useRef } from 'react';
 function AboutDialog({ onClose }) {
   const dialogRef = useRef(null);
 
+  // Open the dialog when mounted
   useEffect(() => {
-    /** Close on Escape key. */
-    function handleKey(e) {
-      if (e.key === 'Escape') onClose();
+    dialogRef.current?.showModal();
+  }, []);
+
+  // Hook into the native 'cancel' event (fired on Escape) to keep React state in sync
+  useEffect(() => {
+    const el = dialogRef.current;
+    function handleCancel(e) {
+      e.preventDefault();
+      onClose();
     }
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
+    el?.addEventListener('cancel', handleCancel);
+    return () => el?.removeEventListener('cancel', handleCancel);
   }, [onClose]);
 
-  /**
-   * Closes when the user clicks the backdrop (outside the card).
-   * @param {React.MouseEvent} e
-   */
-  function handleBackdropClick(e) {
-    if (e.target === dialogRef.current) onClose();
+  // Close when clicking the native backdrop (outside the dialog box)
+  function handleClick(e) {
+    const rect = dialogRef.current?.getBoundingClientRect();
+    if (
+      rect &&
+      (e.clientX < rect.left || e.clientX > rect.right ||
+       e.clientY < rect.top  || e.clientY > rect.bottom)
+    ) {
+      onClose();
+    }
   }
 
   return (
-    <div
+    <dialog
       ref={dialogRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
-      onClick={handleBackdropClick}
-      role="dialog"
-      aria-modal="true"
-      aria-label="About"
+      onClick={handleClick}
+      className="w-full max-w-md p-0 border border-zinc-200 shadow-xl backdrop:bg-black/30 open:flex flex-col"
     >
-      <div className="bg-white border border-zinc-200 p-8 w-full max-w-md relative shadow-xl">
+      <div className="bg-white p-8 relative">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-900 transition-colors text-xl leading-none"
@@ -74,7 +83,7 @@ function AboutDialog({ onClose }) {
           github.com/JD-D3V/COMP4513Assign2
         </a>
       </div>
-    </div>
+    </dialog>
   );
 }
 
