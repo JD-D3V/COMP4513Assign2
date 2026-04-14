@@ -76,7 +76,7 @@ function LoginView({ onLogin }) {
           </h1>
         </div>
 
-        {/* Auth notice - visible to marker for +10% bonus */}
+        {/* Auth notice */}
         <div className="bg-zinc-50 border border-zinc-200 px-4 py-3 text-xs text-zinc-600 space-y-0.5">
           <p className="font-semibold text-zinc-900">Real Authentication</p>
           <p>
