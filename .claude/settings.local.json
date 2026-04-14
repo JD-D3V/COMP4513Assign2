@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Read(//c/repositories/**)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(cp -r C:/repositories/myapp/. C:/repositories/COMP4513Assign2/)",
+      "Bash(rm -rf C:/repositories/myapp)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(npx shadcn@latest init --defaults)"
+    ]
+  }
+}
