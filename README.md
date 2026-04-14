@@ -55,6 +55,10 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 | Recharts | Radar chart for audio analytics on Single Song view | https://recharts.org |
 | Sonner | Toast notifications for playlist add/remove feedback | https://sonner.emilkowal.ski |
 | shadcn/ui | UI components — Table, Badge, Button, Input | https://ui.shadcn.com |
+| Tailwind CSS v4 | Utility-first CSS framework | https://tailwindcss.com |
+| React Router DOM v7 | Client-side routing and navigation | https://reactrouter.com |
+| Supabase JS | Authentication and playlist persistence | https://supabase.com |
+| Geist Variable | Font | https://vercel.com/font |
 
 ## Author
 
