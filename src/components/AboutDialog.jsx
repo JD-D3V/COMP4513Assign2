@@ -58,8 +58,8 @@ function AboutDialog({ onClose }) {
         <h2 className="text-2xl font-black text-zinc-900 mb-4">Music Browser</h2>
 
         <p className="text-zinc-500 text-sm mb-6">
-          COMP 4513 Assignment 2. A music browser SPA featuring audio-profile radar charts,
-          additive filtering, and Supabase-backed playlists.
+          COMP 4513 Assignment 2. A music browser SPA with audio-profile radar charts,
+          additive filtering, Supabase auth and playlists, dynamic hero mosaics, keyboard shortcuts, and a related-songs algorithm.
         </p>
 
         <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Technologies</h3>
@@ -68,8 +68,10 @@ function AboutDialog({ onClose }) {
           <li>React Router DOM v7</li>
           <li>shadcn/ui + Tailwind CSS v4</li>
           <li>Recharts (radar chart)</li>
+          <li>Sonner (toast notifications)</li>
           <li>Supabase (auth + playlists)</li>
           <li>Node.js / Express + SQLite (music API)</li>
+          <li>Geist Variable (font)</li>
         </ul>
 
         <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Third-Party Libraries</h3>
@@ -85,6 +87,10 @@ function AboutDialog({ onClose }) {
           <li>
             <a href="https://ui.shadcn.com" target="_blank" rel="noreferrer" className="text-red-700 hover:underline">shadcn/ui</a>
             {' '}· UI components (Table, Badge, Button, Input)
+          </li>
+          <li>
+            <a href="https://vercel.com/font" target="_blank" rel="noreferrer" className="text-red-700 hover:underline">Geist Variable</a>
+            {' '}· typeface
           </li>
         </ul>
 

@@ -40,13 +40,17 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ## Features
 
 - Browse all artists, genres, and songs with full detail views
-- Additive AND filtering: title search, year, artist, genre multi-select
-- Removable filter chips + Clear All
+- Additive AND filtering: title search, year, artist, genre multi-select with removable chips + Clear All
 - Sort by title, year, or artist name
 - Audio-profile radar chart (danceability, energy, valence, acousticness, liveness, speechiness)
-- Related songs algorithm (top-3 analytic similarity scoring)
-- Supabase authentication (register + login)
-- Personal playlists: create, delete (with confirm), add/remove songs — all persisted in Supabase
+- Related songs algorithm — top-3 analytic attribute similarity scoring across all 236 tracks
+- Supabase authentication (register + login) — real auth, not simulated
+- Personal playlists: create, delete (with confirm), add/remove songs — all persisted in Supabase with RLS
+- Dynamic hero mosaic on every view — reshuffles on every nav click; genre heroes show only artists with songs in that genre; playlist heroes show only artists from that playlist
+- Keyboard shortcuts for navigation (H/A/G/S/P) — hover the ? in the bottom-left corner to see them
+- "Surprise Me" button on Home and Songs — navigates to a random artist or song
+- Animated stat counters on Home — count up from 0 on first load
+- Loading skeletons with animated equalizer bars while data fetches
 
 ## Third-Party Libraries
 
