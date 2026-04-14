@@ -7,6 +7,7 @@ import {
 import { apiFetch } from '@/utils/api';
 import SongTable from '@/components/SongTable';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import HeroStrip from '@/components/HeroStrip';
 import { usePlaylist } from '@/hooks/usePlaylist';
 import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/sonner';
@@ -37,6 +38,7 @@ function SingleSongView({ currentPlaylist, setCurrentPlaylist }) {
   const [genre, setGenre] = useState(null);
   const [related, setRelated] = useState([]);
   const [artistMap, setArtistMap] = useState({});
+  const [heroImages, setHeroImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -62,6 +64,7 @@ function SingleSongView({ currentPlaylist, setCurrentPlaylist }) {
         setArtist(artistData);
         setGenre(songData.genre ?? null);
         setArtistMap(Object.fromEntries(allArtists.map((a) => [a.artist_id, a.artist_name])));
+        setHeroImages(allArtists.map((a) => a.artist_image_url).filter(Boolean));
 
         // Compute related songs
         setRelated(computeRelated(songData, allSongs));
@@ -109,14 +112,16 @@ function SingleSongView({ currentPlaylist, setCurrentPlaylist }) {
   }));
 
   return (
-    <div className="space-y-10">
+    <div>
       <Toaster position="bottom-right" />
 
-      <div className="border-b border-zinc-200 pb-6">
-        <p className="text-xs font-semibold text-red-700 uppercase tracking-widest mb-2">Song</p>
-        <h1 className="text-5xl font-black text-zinc-900 tracking-tight leading-tight">{song.title}</h1>
-      </div>
+      <HeroStrip
+        title={song.title}
+        subtitle={`${song.artist?.artist_name ?? ''} · ${song.year}`}
+        images={heroImages}
+      />
 
+      <div className="space-y-10">
       {/* Three-column detail grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
 
@@ -154,9 +159,7 @@ function SingleSongView({ currentPlaylist, setCurrentPlaylist }) {
               onError={(e) => { e.target.src = '/placeholder.svg'; }}
             />
           ) : (
-            <div className="w-full h-48 bg-zinc-100 flex items-center justify-center text-zinc-300 text-sm">
-              No image
-            </div>
+            <div className="w-full h-48 bg-zinc-100 flex items-center justify-center text-zinc-300 text-sm">No image</div>
           )}
         </div>
 
@@ -191,6 +194,7 @@ function SingleSongView({ currentPlaylist, setCurrentPlaylist }) {
           <SongTable songs={related} artistMap={artistMap} onAddToPlaylist={addSong} />
         </section>
       )}
+      </div>
     </div>
   );
 }

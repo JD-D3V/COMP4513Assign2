@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/utils/supabase';
+import { useKeyboardNav } from './hooks/useKeyboardNav';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -23,6 +24,13 @@ import './App.css';
  * Manages global state: Supabase auth session, current playlist, about dialog.
  * Subscribes to auth state changes so login/logout updates the UI reactively.
  */
+/** Mounts keyboard navigation inside the router context so useNavigate works. */
+function KeyboardNav() {
+  useKeyboardNav();
+  return null;
+}
+
+
 function App() {
   const [user, setUser] = useState(null);
   const [currentPlaylist, setCurrentPlaylist] = useState(null);
@@ -50,6 +58,7 @@ function App() {
 
   return (
     <BrowserRouter basename="/COMP4513Assign2">
+      <KeyboardNav />
       <div className="min-h-screen flex flex-col bg-stone-50 text-zinc-900">
         <Header
           isLoggedIn={isLoggedIn}

@@ -14,6 +14,13 @@ function GenresView() {
   const [heroImages, setHeroImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [shuffleKey, setShuffleKey] = useState(0);
+
+  useEffect(() => {
+    function handle() { setShuffleKey((k) => k + 1); }
+    window.addEventListener('genres-reshuffle', handle);
+    return () => window.removeEventListener('genres-reshuffle', handle);
+  }, []);
 
   useEffect(() => {
     /**
@@ -46,6 +53,7 @@ function GenresView() {
         title="Genres"
         subtitle={`${genres.length} genres`}
         images={heroImages}
+        shuffleKey={shuffleKey}
       />
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">

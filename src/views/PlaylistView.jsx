@@ -20,7 +20,7 @@ import { toast } from 'sonner';
  * @param {number} props.total - Total number of playlists for the subtitle
  * @param {Object.<number,string>} props.artistImageMap - artist id → image URL lookup
  */
-function PlaylistHero({ currentPlaylist, total, artistImageMap }) {
+function PlaylistHero({ currentPlaylist, total, artistImageMap, shuffleKey }) {
   const songs = currentPlaylist?.songs ?? [];
 
   // Collect unique artist image URLs using the artistImageMap
@@ -45,7 +45,7 @@ function PlaylistHero({ currentPlaylist, total, artistImageMap }) {
     }
     return Array.from({ length: 12 }, (_, i) => shuffled[i] ?? null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPlaylist?.id]); // re-run only when the selected playlist changes
+  }, [currentPlaylist?.id, shuffleKey]); // re-run on playlist change or manual reshuffle
 
   // Marquee text: one copy (the flex container doubles it for seamless looping)
   const marqueeText = songs.length > 0
@@ -131,6 +131,7 @@ function PlaylistView({ currentPlaylist, setCurrentPlaylist }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [newName, setNewName] = useState('');
+  const [shuffleKey, setShuffleKey] = useState(0);
 
   const { removeSong } = usePlaylist(currentPlaylist, setCurrentPlaylist);
   const navigate = useNavigate();
@@ -233,6 +234,7 @@ function PlaylistView({ currentPlaylist, setCurrentPlaylist }) {
         currentPlaylist={currentPlaylist}
         total={playlists.length}
         artistImageMap={artistImageMap}
+        shuffleKey={shuffleKey}
       />
 
       {/* Two-column layout: playlist cards left, songs right */}
@@ -253,7 +255,7 @@ function PlaylistView({ currentPlaylist, setCurrentPlaylist }) {
                 return (
                   <div
                     key={p.id}
-                    onClick={() => setCurrentPlaylist(p)}
+                    onClick={() => { setCurrentPlaylist(p); setShuffleKey((k) => k + 1); }}
                     className={`group relative overflow-hidden cursor-pointer transition-colors border ${
                       isActive
                         ? 'border-zinc-900 bg-zinc-900'

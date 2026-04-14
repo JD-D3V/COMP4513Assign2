@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { apiFetch } from '@/utils/api';
 import SongTable from '@/components/SongTable';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import HeroStrip from '@/components/HeroStrip';
 import { usePlaylist } from '@/hooks/usePlaylist';
 import { Toaster } from '@/components/ui/sonner';
 
@@ -19,6 +20,7 @@ function SingleGenreView({ currentPlaylist, setCurrentPlaylist }) {
   const { id } = useParams();
   const [genre, setGenre] = useState(null);
   const [songs, setSongs] = useState([]);
+  const [heroImages, setHeroImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -32,13 +34,20 @@ function SingleGenreView({ currentPlaylist, setCurrentPlaylist }) {
     async function fetchGenre() {
       setLoading(true);
       try {
-        const [genres, songsData] = await Promise.all([
+        const [genres, songsData, artistData] = await Promise.all([
           apiFetch('/api/genres'),
           apiFetch(`/api/songs/genre/${id}`),
+          apiFetch('/api/artists'),
         ]);
         const found = genres.find((g) => String(g.genre_id) === String(id));
         setGenre(found ?? null);
-        setSongs(Array.isArray(songsData) ? songsData : []);
+        const songList = Array.isArray(songsData) ? songsData : [];
+        setSongs(songList);
+
+        // Build hero images from artists whose songs appear in this genre
+        const imageMap = Object.fromEntries(artistData.map((a) => [a.artist_id, a.artist_image_url]).filter(([, v]) => v));
+        const uniqueIds = [...new Set(songList.map((s) => s.artist?.artist_id ?? s.artist_id).filter(Boolean))];
+        setHeroImages(uniqueIds.map((aid) => imageMap[aid]).filter(Boolean));
       } catch (err) {
         setError(err.message);
       } finally {
@@ -53,14 +62,14 @@ function SingleGenreView({ currentPlaylist, setCurrentPlaylist }) {
   if (!genre) return <p className="text-zinc-400 p-4">Genre not found.</p>;
 
   return (
-    <div className="space-y-10">
+    <div>
       <Toaster position="bottom-right" />
 
-      <div className="border-b border-zinc-200 pb-6">
-        <p className="text-xs font-semibold text-red-700 uppercase tracking-widest mb-2">Genre</p>
-        <h1 className="text-5xl font-black text-zinc-900 tracking-tight">{genre.genre_name}</h1>
-        <p className="text-zinc-400 text-sm mt-2">{songs.length} songs</p>
-      </div>
+      <HeroStrip
+        title={genre.genre_name}
+        subtitle={`${songs.length} songs`}
+        images={heroImages}
+      />
 
       <section className="space-y-4">
         <SongTable songs={songs} onAddToPlaylist={addSong} />

@@ -1,4 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { apiFetch } from '@/utils/api';
 import SongTable from '@/components/SongTable';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -26,6 +28,8 @@ function SongsView({ currentPlaylist, setCurrentPlaylist }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [shuffleKey, setShuffleKey] = useState(0);
+
   // Filter state
   const [titleFilter, setTitleFilter] = useState('');
   const [selectedYears, setSelectedYears] = useState([]);
@@ -33,7 +37,21 @@ function SongsView({ currentPlaylist, setCurrentPlaylist }) {
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [sortBy, setSortBy] = useState('title');
 
+  const navigate = useNavigate();
   const { addSong } = usePlaylist(currentPlaylist, setCurrentPlaylist);
+
+  /** Navigates to a random song from the full unfiltered list. */
+  function surpriseMe() {
+    if (allSongs.length === 0) return;
+    const pick = allSongs[Math.floor(Math.random() * allSongs.length)];
+    navigate(`/songs/${pick.song_id}`);
+  }
+
+  useEffect(() => {
+    function handle() { setShuffleKey((k) => k + 1); }
+    window.addEventListener('songs-reshuffle', handle);
+    return () => window.removeEventListener('songs-reshuffle', handle);
+  }, []);
 
   useEffect(() => {
     /**
@@ -136,6 +154,13 @@ function SongsView({ currentPlaylist, setCurrentPlaylist }) {
     [artists]
   );
 
+  /** Songs-per-year data for the distribution bar chart. */
+  const yearChartData = useMemo(() => {
+    const counts = {};
+    allSongs.forEach((s) => { counts[s.year] = (counts[s.year] ?? 0) + 1; });
+    return Object.entries(counts).sort(([a], [b]) => a - b).map(([year, count]) => ({ year, count }));
+  }, [allSongs]);
+
   if (loading) return <LoadingSpinner />;
   if (error) return <p className="text-red-700 p-4">Error: {error}</p>;
 
@@ -147,6 +172,7 @@ function SongsView({ currentPlaylist, setCurrentPlaylist }) {
         title="Songs"
         subtitle={`${allSongs.length} tracks · filter, sort, add to playlist`}
         images={heroImages}
+        shuffleKey={shuffleKey}
       />
 
       <div className="flex gap-0">
@@ -207,6 +233,23 @@ function SongsView({ currentPlaylist, setCurrentPlaylist }) {
 
         {/* ── Results area ── */}
         <section className="flex-1 min-w-0 space-y-4 pl-8 pt-2">
+          {/* Year distribution chart */}
+          <div className="mb-2">
+            <p className="text-[10px] text-zinc-400 uppercase tracking-widest mb-1">Songs by year</p>
+            <ResponsiveContainer width="100%" height={48}>
+              <BarChart data={yearChartData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                <XAxis dataKey="year" tick={{ fontSize: 9, fill: '#a1a1aa' }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ background: '#18181b', border: 'none', borderRadius: 0, fontSize: 11 }}
+                  labelStyle={{ color: '#fff' }}
+                  itemStyle={{ color: '#a1a1aa' }}
+                  cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                />
+                <Bar dataKey="count" fill="#18181b" radius={0} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
           {/* Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap gap-1.5 items-center">
@@ -232,7 +275,13 @@ function SongsView({ currentPlaylist, setCurrentPlaylist }) {
               )}
             </div>
 
-            <div className="flex items-center gap-2 text-sm text-zinc-500">
+            <div className="flex items-center gap-3 text-sm text-zinc-500">
+              <button
+                onClick={surpriseMe}
+                className="text-xs font-semibold text-red-700 border border-red-200 hover:bg-red-700 hover:text-white hover:border-red-700 px-2 py-1 transition-colors"
+              >
+                Surprise Me →
+              </button>
               <span className="text-xs text-zinc-400">{filteredSongs.length} result{filteredSongs.length !== 1 ? 's' : ''}</span>
               <span className="text-zinc-200">·</span>
               <span>Sort</span>

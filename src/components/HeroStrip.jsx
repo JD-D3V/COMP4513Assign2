@@ -1,15 +1,26 @@
+import { useMemo } from 'react';
+
 /**
  * HeroStrip — a short mosaic banner of artist images with a title overlay.
- * Reused on the Artists and Genres entry views as the required hero image.
+ * Reused on the Artists, Genres, and Songs entry views as the required hero image.
  *
  * @param {object} props
  * @param {string} props.title - Large heading text displayed over the mosaic
  * @param {string} props.subtitle - Smaller text below the title
  * @param {string[]} props.images - Array of image URLs to tile across the strip
+ * @param {number} [props.shuffleKey=0] - Increment to trigger a new random tile arrangement
  */
-function HeroStrip({ title, subtitle, images = [] }) {
-  // Pick up to 12 images for the strip; repeat if fewer available
-  const tiles = Array.from({ length: 12 }, (_, i) => images[i % images.length] ?? null);
+function HeroStrip({ title, subtitle, images = [], shuffleKey = 0 }) {
+  // Shuffle images and pick 12 tiles; re-shuffles whenever shuffleKey changes
+  const tiles = useMemo(() => {
+    const shuffled = [...images];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return Array.from({ length: 12 }, (_, i) => shuffled[i % Math.max(shuffled.length, 1)] ?? null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shuffleKey, images.length]);
 
   return (
     <div className="relative h-48 -mx-6 overflow-hidden mb-8">

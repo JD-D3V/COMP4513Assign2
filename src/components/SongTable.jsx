@@ -16,6 +16,7 @@ import {
  * @param {function} [props.onRemove] - Called with the song when − clicked;
  *   omit to hide the Remove column
  */
+
 function SongTable({ songs, artistMap = {}, onAddToPlaylist, onRemove }) {
   if (!songs || songs.length === 0) {
     return <p className="text-zinc-400 text-sm py-4">No songs found.</p>;
@@ -56,6 +57,7 @@ function SongTable({ songs, artistMap = {}, onAddToPlaylist, onRemove }) {
                 </Link>
               </TableCell>
               <TableCell className="text-zinc-400">{song.year}</TableCell>
+
               {onAddToPlaylist && (
                 <TableCell>
                   <button

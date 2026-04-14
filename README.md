@@ -4,13 +4,24 @@ A React single-page application for browsing a music collection. Browse artists,
 
 ## Live Demo
 
-Deployed on Netlify — see submission for URL.
+Deployed on GitHub Pages: [jd-d3v.github.io/COMP4513Assign2](https://jd-d3v.github.io/COMP4513Assign2/)
 
 ## Getting Started
 
 ```bash
 npm install
 npm run dev
+```
+
+### Environment Variables
+
+Create a `.env.local` file:
+
+```
+VITE_API_BASE_URL=https://your-render-url.onrender.com
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
 ## Tech Stack
 
@@ -23,7 +34,7 @@ npm run dev
 | Charts | Recharts (RadarChart) |
 | Music data API | Node.js / Express + SQLite (Assignment 1) |
 | Auth + Playlists | Supabase |
-| Hosting (React) | Netlify |
+| Hosting (React) | GitHub Pages |
 | Hosting (API) | Render |
 
 ## Features

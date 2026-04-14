@@ -40,10 +40,10 @@ function Header({ isLoggedIn, currentPlaylist, onAbout }) {
 
         {/* Nav */}
         <nav className="flex items-center gap-6 text-sm">
-          <NavLink to="/" end className={navClass}>Home</NavLink>
-          <NavLink to="/artists" className={navClass}>Artists</NavLink>
-          <NavLink to="/genres" className={navClass}>Genres</NavLink>
-          <NavLink to="/songs" className={navClass}>Songs</NavLink>
+          <NavLink to="/" end className={navClass} onClick={() => window.dispatchEvent(new Event('home-reshuffle'))}>Home</NavLink>
+          <NavLink to="/artists" className={navClass} onClick={() => window.dispatchEvent(new Event('artists-reshuffle'))}>Artists</NavLink>
+          <NavLink to="/genres" className={navClass} onClick={() => window.dispatchEvent(new Event('genres-reshuffle'))}>Genres</NavLink>
+          <NavLink to="/songs" className={navClass} onClick={() => window.dispatchEvent(new Event('songs-reshuffle'))}>Songs</NavLink>
           {isLoggedIn && <NavLink to="/playlists" className={navClass}>Playlists</NavLink>}
           <button
             onClick={onAbout}
