@@ -49,7 +49,7 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/COMP4513Assign2">
       <div className="min-h-screen flex flex-col bg-stone-50 text-zinc-900">
         <Header
           isLoggedIn={isLoggedIn}

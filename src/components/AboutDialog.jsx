@@ -72,6 +72,22 @@ function AboutDialog({ onClose }) {
           <li>Node.js / Express + SQLite (music API)</li>
         </ul>
 
+        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Third-Party Libraries</h3>
+        <ul className="text-zinc-600 space-y-1 mb-6 text-sm">
+          <li>
+            <a href="https://recharts.org" target="_blank" rel="noreferrer" className="text-red-700 hover:underline">Recharts</a>
+            {' '}— radar chart for audio analytics
+          </li>
+          <li>
+            <a href="https://sonner.emilkowal.ski" target="_blank" rel="noreferrer" className="text-red-700 hover:underline">Sonner</a>
+            {' '}— toast notifications
+          </li>
+          <li>
+            <a href="https://ui.shadcn.com" target="_blank" rel="noreferrer" className="text-red-700 hover:underline">shadcn/ui</a>
+            {' '}— UI components (Table, Badge, Button, Input)
+          </li>
+        </ul>
+
         <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Author</h3>
         <p className="text-zinc-600 text-sm mb-1">Joseph D</p>
         <a

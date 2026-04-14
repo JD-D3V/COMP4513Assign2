@@ -11,15 +11,6 @@ Deployed on Netlify — see submission for URL.
 ```bash
 npm install
 npm run dev
-```
-
-Create a `.env.local` file with:
-
-```
-VITE_API_BASE_URL=https://<your-render-app>.onrender.com
-VITE_SUPABASE_URL=https://<your-project>.supabase.co
-VITE_SUPABASE_ANON_KEY=<your-anon-key>
-```
 
 ## Tech Stack
 
@@ -45,6 +36,14 @@ VITE_SUPABASE_ANON_KEY=<your-anon-key>
 - Related songs algorithm (top-3 analytic similarity scoring)
 - Supabase authentication (register + login)
 - Personal playlists: create, delete (with confirm), add/remove songs — all persisted in Supabase
+
+## Third-Party Libraries
+
+| Library | Purpose | URL |
+|---------|---------|-----|
+| Recharts | Radar chart for audio analytics on Single Song view | https://recharts.org |
+| Sonner | Toast notifications for playlist add/remove feedback | https://sonner.emilkowal.ski |
+| shadcn/ui | UI components — Table, Badge, Button, Input | https://ui.shadcn.com |
 
 ## Author
 
