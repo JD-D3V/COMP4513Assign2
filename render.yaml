@@ -1,0 +1,10 @@
+services:
+  # Single service: Express serves both the API and the built React app
+  - type: web
+    name: comp4513-assign2
+    env: node
+    buildCommand: npm install && npm run build && cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 22.14.0
