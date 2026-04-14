@@ -89,7 +89,7 @@ function SingleArtistView({ currentPlaylist, setCurrentPlaylist }) {
       {/* Songs */}
       <section className="space-y-4">
         <h2 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest">
-          Songs — {songs.length} tracks
+          Songs · {songs.length} tracks
         </h2>
         <SongTable songs={songs} onAddToPlaylist={addSong} />
       </section>

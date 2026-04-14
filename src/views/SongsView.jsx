@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { apiFetch } from '@/utils/api';
 import SongTable from '@/components/SongTable';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import HeroStrip from '@/components/HeroStrip';
 import { usePlaylist } from '@/hooks/usePlaylist';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -78,11 +79,11 @@ function SongsView({ currentPlaylist, setCurrentPlaylist }) {
     return allSongs
       .filter((s) => !titleFilter || s.title.toLowerCase().includes(titleFilter.toLowerCase()))
       .filter((s) => selectedYears.length === 0 || selectedYears.includes(Number(s.year)))
-      .filter((s) => selectedArtists.length === 0 || selectedArtists.includes(s.artist?.artist_id))
-      .filter((s) => selectedGenres.length === 0 || selectedGenres.includes(s.genre?.genre_id))
+      .filter((s) => selectedArtists.length === 0 || selectedArtists.includes(s.artist?.artist_id ?? s.artist_id))
+      .filter((s) => selectedGenres.length === 0 || selectedGenres.includes(s.genre?.genre_id ?? s.genre_id))
       .sort((a, b) => {
         if (sortBy === 'year') return Number(a.year) - Number(b.year);
-        if (sortBy === 'artist') return (a.artist?.artist_name ?? '').localeCompare(b.artist?.artist_name ?? '');
+        if (sortBy === 'artist') return (a.artist?.artist_name ?? artistMap[a.artist_id] ?? '').localeCompare(b.artist?.artist_name ?? artistMap[b.artist_id] ?? '');
         return a.title.localeCompare(b.title);
       });
   }, [allSongs, titleFilter, selectedYears, selectedArtists, selectedGenres, sortBy, artistMap]);
@@ -118,6 +119,7 @@ function SongsView({ currentPlaylist, setCurrentPlaylist }) {
 
   /** Active filter chips derived from current filter state. */
   const activeChips = [
+    ...(titleFilter ? [{ label: `"${titleFilter}"`, remove: () => setTitleFilter('') }] : []),
     ...selectedYears.map((y) => ({ label: String(y), remove: () => toggleYear(y) })),
     ...selectedArtists.map((id) => ({
       label: artistMap[id] ?? String(id),
@@ -129,130 +131,126 @@ function SongsView({ currentPlaylist, setCurrentPlaylist }) {
     }),
   ];
 
+  const heroImages = useMemo(
+    () => artists.map((a) => a.artist_image_url).filter(Boolean),
+    [artists]
+  );
+
   if (loading) return <LoadingSpinner />;
   if (error) return <p className="text-red-700 p-4">Error: {error}</p>;
 
   return (
-    <div className="flex gap-8">
+    <div>
       <Toaster position="bottom-right" />
 
-      {/* ── Filter sidebar ── */}
-      <aside className="w-52 flex-shrink-0 space-y-5 self-start sticky top-20">
-        <h2 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest">Filters</h2>
+      <HeroStrip
+        title="Songs"
+        subtitle={`${allSongs.length} tracks · filter, sort, add to playlist`}
+        images={heroImages}
+      />
 
-        {/* Title */}
-        <div className="space-y-1.5">
-          <p className="text-xs font-medium text-zinc-500">Title</p>
-          <Input
-            placeholder="Search title…"
-            value={titleFilter}
-            onChange={(e) => setTitleFilter(e.target.value)}
-            className="bg-white border-zinc-200 text-zinc-900 text-sm h-8 placeholder:text-zinc-300"
-          />
-        </div>
+      <div className="flex gap-0">
+        {/* ── Filter sidebar — dark inverted panel ── */}
+        <aside className="w-56 flex-shrink-0 self-start sticky top-14 bg-zinc-900 text-white p-5 space-y-6 -ml-6 min-h-[calc(100vh-3.5rem)]">
+          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest">Filters</p>
 
-        {/* Years */}
-        <details open className="space-y-1">
-          <summary className="text-xs font-medium text-zinc-500 cursor-pointer select-none">Years</summary>
-          <div className="mt-2 max-h-40 overflow-y-auto space-y-1">
-            {years.map((y) => (
-              <label key={y} className="flex items-center gap-2 text-sm text-zinc-600 cursor-pointer hover:text-zinc-900 py-0.5">
-                <input
-                  type="checkbox"
-                  className="accent-red-700"
-                  checked={selectedYears.includes(y)}
-                  onChange={() => toggleYear(y)}
-                />
-                {y}
-              </label>
-            ))}
+          {/* Title */}
+          <div className="space-y-1.5">
+            <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Title</p>
+            <Input
+              placeholder="Search…"
+              value={titleFilter}
+              onChange={(e) => setTitleFilter(e.target.value)}
+              className="bg-zinc-800 border-zinc-700 text-white text-sm h-8 placeholder:text-zinc-500 rounded-none"
+            />
           </div>
-        </details>
 
-        {/* Artists */}
-        <details className="space-y-1">
-          <summary className="text-xs font-medium text-zinc-500 cursor-pointer select-none">Artists</summary>
-          <div className="mt-2 max-h-48 overflow-y-auto space-y-1">
-            {artists.map((a) => (
-              <label key={a.artist_id} className="flex items-center gap-2 text-sm text-zinc-600 cursor-pointer hover:text-zinc-900 py-0.5">
-                <input
-                  type="checkbox"
-                  className="accent-red-700"
-                  checked={selectedArtists.includes(a.artist_id)}
-                  onChange={() => toggleArtist(a.artist_id)}
-                />
-                {a.artist_name}
-              </label>
-            ))}
+          {/* Years */}
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Year</p>
+            <div className="max-h-40 overflow-y-auto space-y-1 pr-1">
+              {years.map((y) => (
+                <label key={y} className="flex items-center gap-2 text-sm text-zinc-300 cursor-pointer hover:text-white py-0.5">
+                  <input type="checkbox" className="accent-red-500" checked={selectedYears.includes(y)} onChange={() => toggleYear(y)} />
+                  {y}
+                </label>
+              ))}
+            </div>
           </div>
-        </details>
 
-        {/* Genres */}
-        <details className="space-y-1">
-          <summary className="text-xs font-medium text-zinc-500 cursor-pointer select-none">Genres</summary>
-          <div className="mt-2 max-h-48 overflow-y-auto space-y-1">
-            {genres.map((g) => (
-              <label key={g.genre_id} className="flex items-center gap-2 text-sm text-zinc-600 cursor-pointer hover:text-zinc-900 py-0.5">
-                <input
-                  type="checkbox"
-                  className="accent-red-700"
-                  checked={selectedGenres.includes(g.genre_id)}
-                  onChange={() => toggleGenre(g.genre_id)}
-                />
-                {g.genre_name}
-              </label>
-            ))}
+          {/* Artists */}
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Artist</p>
+            <div className="max-h-48 overflow-y-auto space-y-1 pr-1">
+              {artists.map((a) => (
+                <label key={a.artist_id} className="flex items-center gap-2 text-sm text-zinc-300 cursor-pointer hover:text-white py-0.5">
+                  <input type="checkbox" className="accent-red-500" checked={selectedArtists.includes(a.artist_id)} onChange={() => toggleArtist(a.artist_id)} />
+                  {a.artist_name}
+                </label>
+              ))}
+            </div>
           </div>
-        </details>
-      </aside>
 
-      {/* ── Results area ── */}
-      <section className="flex-1 min-w-0 space-y-4">
-        {/* Toolbar: chips + sort */}
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex flex-wrap gap-1.5 items-center">
-            {activeChips.map((chip, i) => (
-              <Badge
-                key={i}
-                variant="secondary"
-                className="bg-zinc-900 text-white hover:bg-red-700 cursor-pointer gap-1 rounded-none text-xs"
-                onClick={chip.remove}
+          {/* Genres */}
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Genre</p>
+            <div className="max-h-48 overflow-y-auto space-y-1 pr-1">
+              {genres.map((g) => (
+                <label key={g.genre_id} className="flex items-center gap-2 text-sm text-zinc-300 cursor-pointer hover:text-white py-0.5">
+                  <input type="checkbox" className="accent-red-500" checked={selectedGenres.includes(g.genre_id)} onChange={() => toggleGenre(g.genre_id)} />
+                  {g.genre_name}
+                </label>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        {/* ── Results area ── */}
+        <section className="flex-1 min-w-0 space-y-4 pl-8 pt-2">
+          {/* Toolbar */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap gap-1.5 items-center">
+              {activeChips.map((chip, i) => (
+                <Badge
+                  key={i}
+                  variant="secondary"
+                  className="bg-zinc-900 text-white hover:bg-red-700 cursor-pointer gap-1 rounded-none text-xs"
+                  onClick={chip.remove}
+                >
+                  {chip.label} ✕
+                </Badge>
+              ))}
+              {activeChips.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-zinc-400 hover:text-zinc-900 h-6 px-2 text-xs"
+                  onClick={clearAll}
+                >
+                  Clear All
+                </Button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 text-sm text-zinc-500">
+              <span className="text-xs text-zinc-400">{filteredSongs.length} result{filteredSongs.length !== 1 ? 's' : ''}</span>
+              <span className="text-zinc-200">·</span>
+              <span>Sort</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-white border border-zinc-200 text-zinc-700 px-2 py-1 text-sm"
               >
-                {chip.label} ✕
-              </Badge>
-            ))}
-            {activeChips.length > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-zinc-400 hover:text-zinc-900 h-6 px-2 text-xs"
-                onClick={clearAll}
-              >
-                Clear All
-              </Button>
-            )}
+                <option value="title">Title</option>
+                <option value="year">Year</option>
+                <option value="artist">Artist</option>
+              </select>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-zinc-500">
-            <span>Sort</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white border border-zinc-200 text-zinc-700 px-2 py-1 text-sm"
-            >
-              <option value="title">Title</option>
-              <option value="year">Year</option>
-              <option value="artist">Artist</option>
-            </select>
-          </div>
-        </div>
-
-        <p className="text-xs text-zinc-400">
-          {filteredSongs.length} result{filteredSongs.length !== 1 ? 's' : ''}
-        </p>
-
-        <SongTable songs={filteredSongs} artistMap={artistMap} onAddToPlaylist={addSong} />
-      </section>
+          <SongTable songs={filteredSongs} artistMap={artistMap} onAddToPlaylist={addSong} />
+        </section>
+      </div>
     </div>
   );
 }

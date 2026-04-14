@@ -98,7 +98,7 @@ function SingleSongView({ currentPlaylist, setCurrentPlaylist }) {
       .slice(0, 5);
   }
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner variant="song" />;
   if (error) return <p className="text-red-700 p-4">Error: {error}</p>;
   if (!song) return null;
 

@@ -53,14 +53,18 @@ function Header({ isLoggedIn, currentPlaylist, onAbout }) {
           </button>
         </nav>
 
-        {/* Right side */}
-        <div className="flex items-center gap-4 text-sm flex-shrink-0">
+        {/* Right side — fixed width so playlist badge changes don't shift the layout */}
+        <div className="flex items-center gap-4 text-sm flex-shrink-0 w-48 justify-end">
           {isLoggedIn ? (
             <>
               {currentPlaylist && (
-                <span className="text-xs text-zinc-500 border border-zinc-200 rounded px-2 py-1">
+                <NavLink
+                  to="/playlists"
+                  className="text-xs text-zinc-500 border border-zinc-200 hover:border-zinc-900 hover:text-zinc-900 transition-colors px-2 py-1 truncate max-w-[120px]"
+                  title={`${currentPlaylist.name} · ${currentPlaylist.songs?.length ?? 0} songs`}
+                >
                   {currentPlaylist.name} · {currentPlaylist.songs?.length ?? 0}
-                </span>
+                </NavLink>
               )}
               <button
                 onClick={handleLogout}

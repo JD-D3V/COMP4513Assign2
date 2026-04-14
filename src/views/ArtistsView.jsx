@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { apiFetch } from '@/utils/api';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import HeroStrip from '@/components/HeroStrip';
 
 /**
  * Artists entry view.
@@ -30,17 +31,20 @@ function ArtistsView() {
     fetchArtists();
   }, []);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner variant="grid" />;
   if (error) return <p className="text-red-700 p-4">Error: {error}</p>;
 
-  return (
-    <div className="space-y-8">
-      <div className="border-b border-zinc-200 pb-4">
-        <h1 className="text-4xl font-black text-zinc-900 tracking-tight">Artists</h1>
-        <p className="text-zinc-400 text-sm mt-1">{artists.length} artists</p>
-      </div>
+  const heroImages = artists.map(a => a.artist_image_url).filter(Boolean);
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+  return (
+    <div>
+      <HeroStrip
+        title="Artists"
+        subtitle={`${artists.length} artists`}
+        images={heroImages}
+      />
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 space-y-0">
         {artists.map((artist) => (
           <Link
             key={artist.artist_id}

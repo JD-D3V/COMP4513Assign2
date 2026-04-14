@@ -1,4 +1,9 @@
 @import "tailwindcss";
+
+html {
+  overflow-y: scroll;
+  background-color: #f5f5f4; /* stone-50 — matches App bg */
+}
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";

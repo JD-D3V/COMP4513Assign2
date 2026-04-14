@@ -47,6 +47,6 @@ npm run dev
 
 ## Author
 
-Joseph D — [github.com/JD-D3V](https://github.com/JD-D3V)
+Joseph Mills — [github.com/JD-D3V](https://github.com/JD-D3V)
 
 Source: [github.com/JD-D3V/COMP4513Assign2](https://github.com/JD-D3V/COMP4513Assign2)

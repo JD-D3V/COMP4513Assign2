@@ -43,7 +43,7 @@ function AboutDialog({ onClose }) {
     <dialog
       ref={dialogRef}
       onClick={handleClick}
-      className="w-full max-w-md p-0 border border-zinc-200 shadow-xl backdrop:bg-black/30 open:flex flex-col"
+      className="w-full max-w-md p-0 border border-zinc-200 shadow-xl backdrop:bg-black/30 open:flex flex-col m-auto"
     >
       <div className="bg-white p-8 relative">
         <button
@@ -58,7 +58,7 @@ function AboutDialog({ onClose }) {
         <h2 className="text-2xl font-black text-zinc-900 mb-4">Music Browser</h2>
 
         <p className="text-zinc-500 text-sm mb-6">
-          COMP 4513 Assignment 2 — A music browser SPA featuring audio-profile radar charts,
+          COMP 4513 Assignment 2. A music browser SPA featuring audio-profile radar charts,
           additive filtering, and Supabase-backed playlists.
         </p>
 
@@ -76,20 +76,20 @@ function AboutDialog({ onClose }) {
         <ul className="text-zinc-600 space-y-1 mb-6 text-sm">
           <li>
             <a href="https://recharts.org" target="_blank" rel="noreferrer" className="text-red-700 hover:underline">Recharts</a>
-            {' '}— radar chart for audio analytics
+            {' '}· radar chart for audio analytics
           </li>
           <li>
             <a href="https://sonner.emilkowal.ski" target="_blank" rel="noreferrer" className="text-red-700 hover:underline">Sonner</a>
-            {' '}— toast notifications
+            {' '}· toast notifications
           </li>
           <li>
             <a href="https://ui.shadcn.com" target="_blank" rel="noreferrer" className="text-red-700 hover:underline">shadcn/ui</a>
-            {' '}— UI components (Table, Badge, Button, Input)
+            {' '}· UI components (Table, Badge, Button, Input)
           </li>
         </ul>
 
         <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Author</h3>
-        <p className="text-zinc-600 text-sm mb-1">Joseph D</p>
+        <p className="text-zinc-600 text-sm mb-1">Joseph Mills</p>
         <a
           href="https://github.com/JD-D3V/COMP4513Assign2"
           target="_blank"
